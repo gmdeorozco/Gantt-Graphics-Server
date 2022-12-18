@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gantt.gantt.entities.Activity;
 import com.gantt.gantt.entities.NewActivityPayload;
+import com.gantt.gantt.entities.UpdateActivityPayload;
 import com.gantt.gantt.services.ActivityService;
 
 @RestController
@@ -43,6 +45,12 @@ public class ActivityController {
     @DeleteMapping("/activity/{id}/delete")
     public boolean deleteById( @PathVariable(value = "id") Long id ){
         return activityService.deleteById( id );
+    }
+
+    @PutMapping("/activity/update")
+    public Activity updateActivity( @RequestBody UpdateActivityPayload payload){
+        
+        return activityService.update( payload );
     }
 
 }

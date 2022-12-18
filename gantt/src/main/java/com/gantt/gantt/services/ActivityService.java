@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.gantt.gantt.entities.Activity;
 import com.gantt.gantt.entities.NewActivityPayload;
+import com.gantt.gantt.entities.UpdateActivityPayload;
 import com.gantt.gantt.repository.ActivityRepository;
 
 @Service
@@ -20,6 +21,8 @@ public class ActivityService {
     public Optional<Activity> findById( Long id ){
         return activityRepository.findById(id);
     }
+
+
 
     public Activity save( NewActivityPayload payload ){
 
@@ -58,6 +61,33 @@ public class ActivityService {
             );
     }
 
+
+    public Activity update( UpdateActivityPayload payload){
+        
+        List<Activity> pre = payload.getPrerequisites().stream()
+            .map( id -> findById(id).get())
+            .toList();
+        
+        LocalDate soonestInitial = getSoonestInitial( payload );
+        LocalDate soonestEnd = soonestInitial.plusDays(payload.getDaysRequired());
+        LocalDate actualInitial = payload.getActualInitial().isAfter(soonestInitial) 
+            ? payload.getActualInitial() : soonestInitial;
+
+
+        return activityRepository.save(
+            Activity.builder()
+            .actualEnd( actualInitial.plusDays( payload.getDaysRequired() ) )
+            .actualInitial( actualInitial )
+            .daysRequired( payload.getDaysRequired())
+            .id( payload.getId())
+            .name( payload.getName() )
+            .prerequisites( pre )
+            .soonestEnd( soonestEnd )
+            .soonestInitial( soonestInitial )
+            .build()
+            );
+    }
+
     public List<Activity> findAll(){
         return (List<Activity>) activityRepository.findAll();
     }
@@ -89,4 +119,12 @@ public class ActivityService {
             
 
         }
+    
+        private LocalDate getSoonestInitial( UpdateActivityPayload payload){
+            return  payload.getPrerequisites().stream()
+                .map( id -> findById(id).get().getActualEnd())
+                .max( LocalDate::compareTo)
+                .get()
+                .plusDays(1);
+        } 
 }
