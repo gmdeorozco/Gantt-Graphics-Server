@@ -64,19 +64,35 @@ public class ActivityService {
 
     public Activity update( UpdateActivityPayload payload){
         
-        List<Activity> pre = payload.getPrerequisites().stream()
+        List<Activity> pre =  payload.getPrerequisites().stream()
             .map( id -> findById(id).get())
             .toList();
+     
         
         LocalDate soonestInitial = getSoonestInitial( payload );
-        LocalDate soonestEnd = soonestInitial.plusDays(payload.getDaysRequired());
-        LocalDate actualInitial = payload.getActualInitial().isAfter(soonestInitial) 
+        LocalDate soonestEnd = soonestInitial.plusDays( payload.getDaysRequired() );
+        LocalDate actualInitial = payload.getActualInitial().isAfter( soonestInitial ) 
             ? payload.getActualInitial() : soonestInitial;
+        LocalDate actualEnd = actualInitial.plusDays( payload.getDaysRequired() );
+
+        Activity activity = findById( payload.getId() ).get();
+
+        findAll().stream()
+            .filter( act -> act.getPrerequisites().contains( activity ) )
+            .forEach( act -> {
+                updateAffectedActivity( act, soonestEnd.isAfter(actualEnd) ? soonestEnd : actualEnd );
+                
+            });
+            
+            
+        
+        
+            
 
 
         return activityRepository.save(
             Activity.builder()
-            .actualEnd( actualInitial.plusDays( payload.getDaysRequired() ) )
+            .actualEnd( actualEnd )
             .actualInitial( actualInitial )
             .daysRequired( payload.getDaysRequired())
             .id( payload.getId())
@@ -127,4 +143,20 @@ public class ActivityService {
                 .get()
                 .plusDays(1);
         } 
+
+        private void updateAffectedActivity( Activity activity, LocalDate newLastDate){
+            activity.setSoonestInitial( newLastDate.plusDays(1) );
+            activity.setActualInitial( activity.getSoonestInitial().isAfter( activity.getActualInitial()) 
+                ? activity.getSoonestInitial()
+                : activity.getActualInitial());
+            activity.setSoonestEnd( activity.getActualInitial().plusDays( activity.getDaysRequired() ));
+            activity.setActualEnd( activity.getSoonestEnd().isAfter( activity.getActualEnd()) 
+                ? activity.getSoonestEnd() : activity.getActualEnd() );
+            
+            activityRepository.save( activity );
+
+            findAll().stream()
+                .filter(act -> act.getPrerequisites().contains( activity ))
+                .forEach(affAct -> updateAffectedActivity(affAct, activity.getActualEnd() ));
+        }
 }

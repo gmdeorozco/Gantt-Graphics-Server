@@ -1,6 +1,7 @@
 package com.gantt.gantt.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +20,6 @@ public class UpdateActivityPayload {
     private LocalDate soonestEnd;
     private LocalDate actualEnd;
     private int daysRequired;
-    private List<Long> prerequisites;
+    private List<Long> prerequisites = new ArrayList<>();
 
 }
