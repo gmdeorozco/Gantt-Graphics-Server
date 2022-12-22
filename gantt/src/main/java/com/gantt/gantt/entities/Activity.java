@@ -22,7 +22,7 @@ public class Activity {
     @Id @GeneratedValue
     private Long id;
 
-    @Column(nullable = false, unique = true )
+    @Column( nullable = false, unique = true )
     private String name;
 
     private LocalDate soonestInitial; 
@@ -32,7 +32,7 @@ public class Activity {
     private int daysRequired;
 
     @ManyToMany
-    private List<Activity> prerequisites;
+    private List < Activity > prerequisites;
 
    
 }

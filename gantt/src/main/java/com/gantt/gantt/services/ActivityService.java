@@ -159,4 +159,23 @@ public class ActivityService {
                 .filter(act -> act.getPrerequisites().contains( activity ))
                 .forEach(affAct -> updateAffectedActivity(affAct, activity.getActualEnd() ));
         }
+
+
+        public boolean dettachPrerequisite( Long activityId, Long activityPreId ){
+
+            try{
+                Activity activity = findById(activityId).get();
+                Activity prerrequisiteActivity = findById(activityPreId).get();
+
+                activity.getPrerequisites().remove(prerrequisiteActivity);
+
+                activityRepository.save( activity );
+
+                return true;
+
+            } catch( Exception e){
+                return false;
+            }
+
+        }
 }
