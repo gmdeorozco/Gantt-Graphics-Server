@@ -1,15 +1,23 @@
-# --- name of app goes here ---
+# --- GANTT SERVER API ---
+
+This Restful Service provides with the necesary features to implement
+Gantt Charting. 
+
+- Organizes Tasks 
+- In this realease it does not caculate Critical Path yet but I will also 
+include it. 
 
 # TECHNOLOGIES APPLIED:
 
+- Java / Maven project
+- JPA / Hibernate for DB persistency.
+- h2 in memory Database 
+- Lombok 
+- HATEOAS for improving Restful Services
+- Spring Web for Restful services 
+
 # TECHNOLOGIES TO BE APPLIED
 
-- Java / Maven built project
-- JPA / Hibernate for DB persistency.
-- h2 in memory Database **
-- Spring Web for Restful services **
-- Lombok ** (check if applied in all use cases)
-- HATEOAS for improving Restful Services / Pagination
 - Spring Security for
     ->  Authentication
     ->  Authorization
@@ -30,6 +38,4 @@
 - Apply Desgin Patterns
 - Audit for Best Practices
 
-
-# New Implement
 
