@@ -26,15 +26,15 @@ import com.gantt.gantt.models.ActivityModel;
 import com.gantt.gantt.services.ActivityService;
 
 @RestController
-@RequestMapping("/api/v1")
-public class ActivityController {
+@RequestMapping("/api/v2")
+public class ActivityControllerV2 {
 
     @Autowired
     ActivityService activityService;
 
     @Autowired
     ActivityModelAssembler activityModelAssembler;
-    
+    //
     @PostMapping("/activity/create")
     public ResponseEntity<ActivityModel> create( @RequestBody NewActivityPayload payload ){
      
@@ -44,31 +44,34 @@ public class ActivityController {
     }
 
     @GetMapping("/activity")
-    public ResponseEntity<CollectionModel<ActivityModel>> getAll(){
+    public ResponseEntity<CollectionModel<ActivityModel>> getAllAlphabetically(){
 
-        List<Activity> activities = activityService.findAll();
+        List<Activity> activities = activityService.getAllActivitesAlphabetically();
 
         return new ResponseEntity<>( activityModelAssembler.toCollectionModel(activities),
             HttpStatus.OK);
     }
 
-    @GetMapping("/activity/{id}")
-    public ResponseEntity<ActivityModel> getById( @PathVariable(value = "id") Long id){
+    
+    
+    @GetMapping("/activity/{id}/{name}")
+    public ResponseEntity<ActivityModel> getById( @PathVariable(value = "id") Long id,
+        @PathVariable(value = "name") String name){
         
-        return activityService.findById( id )
+        return activityService.findActivityByIdAndName( id, name )
             .map( activityModelAssembler::toModel)
             .map( ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
 
-
+//
     @PutMapping("/activity/update")
     public ResponseEntity<ActivityModel> updateActivity( @RequestBody UpdateActivityPayload payload){
         
         return ResponseEntity.ok(activityModelAssembler.toModel(activityService.update( payload )));
     }
-
+//
     @DeleteMapping("/activity/{id}/delete")
     public Activity deleteById( @PathVariable(value = "id") Long id ){
         Activity activity = activityService.findById( id ).get();
@@ -78,7 +81,7 @@ public class ActivityController {
         return activity;
 
     }
-
+//
     @PutMapping("activity/{id}/dettach/{pid}")
     public Activity dettachPrerequisite( @PathVariable(value = "id") Long id,
         @PathVariable(value = "pid") Long pid ){

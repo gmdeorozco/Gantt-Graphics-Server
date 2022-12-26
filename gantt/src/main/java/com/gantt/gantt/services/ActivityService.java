@@ -22,8 +22,6 @@ public class ActivityService {
         return activityRepository.findById(id);
     }
 
-
-
     public Activity save( NewActivityPayload payload ){
 
         List<Activity> preActivities = new ArrayList<>();
@@ -177,5 +175,13 @@ public class ActivityService {
                 return false;
             }
 
+        }
+
+        public List<Activity> getAllActivitesAlphabetically(){
+            return (List<Activity>) activityRepository.findAllActivitiesAlphabetical();
+        }
+
+        public Optional<Activity> findActivityByIdAndName( Long id, String name){
+            return activityRepository.findActivityByIdAndName(id, name);
         }
 }
